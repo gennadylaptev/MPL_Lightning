@@ -4,13 +4,28 @@ from torchvision import datasets
 
 
 class CIFAR10SSL(datasets.CIFAR10):
-    def __init__(self, root, indexs, train=True,
-                 transform=None, target_transform=None,
-                 download=False):
+    def __init__(
+        self, root, indexs,
+        train=True,
+        transform=None,
+        target_transform=None,
+        download=False,
+    ):
+        """ 
+        Args:
+            filepath to dataset 
+            indices
+            use train part or not
+            transformation for images
+            transformation for labels
+            to download or not
+                 
+        """
         super().__init__(root, train=train,
                          transform=transform,
                          target_transform=target_transform,
                          download=download)
+
         if indexs is not None:
             self.data = self.data[indexs]
             self.targets = np.array(self.targets)[indexs]

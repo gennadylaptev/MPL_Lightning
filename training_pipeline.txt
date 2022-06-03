@@ -1,0 +1,19 @@
+U_s is used as U in MPL loss
+
+1. teacher - predict on L, U_w, U_s
+2. student - predict on L, U_s
+3. convert teacher softlabels on U_w to hardlabels 
+4. compute student grad on L and store grad
+5. train student: loss between student preds on *U_s* and teacher hard labels on *U_w*
+    ???
+6. run grad step, get student_new
+7. train Teacher via UDA loss
+    1. filter teacher preds on U_w by threshold
+    2. run CE between teacher preds on U_w and U_s
+    3. run CE on teacher preds on labeled and target
+    4. compute weight for loss from p.2
+8. compute MPL loss for teacher
+    1. get teacher hard preds on U_s
+    2. get student preds on labeled data (detached)
+    3. Compute dot_product between grad CE_old on U and grad CE_new on L
+    4. compute MPL teacher loss = dot_product * CE(T(U_s), hard T(U_s))

@@ -10,6 +10,7 @@ import mpl_lightning
 
 def configure_parser():
     parser = ArgumentParser()
+
     parser.add_argument('--name', type=str, required=True, help='experiment name')
     parser.add_argument('--save-path', default='./checkpoint', type=str, help='save path')
     parser.add_argument('--dataset', default='cifar10', type=str,
@@ -19,8 +20,10 @@ def configure_parser():
     parser.add_argument('--grad-clip', default=0., type=float, help='gradient norm clipping')
     parser.add_argument('--gpu_num', default=1, type=int, help='training pu number')
     parser.add_argument('--total-steps', default=300000, type=int, help='number of total steps to run')
+
     parser = mpl_lightning.datamodules.add_data_specific_args(parser)
     parser = mpl_lightning.LightningMPL.add_model_specific_args(parser)
+
     return parser
 
 
@@ -93,12 +96,17 @@ def get_model(args):
 if __name__ == "__main__":
     parser = configure_parser()
     args = parser.parse_args()
+
     set_seed(args.seed)
+
     data_module = get_datamodule(args)
     model = get_model(args)
+
     checkpoint_callback = pl.callbacks.ModelCheckpoint(monitor="val/loss", save_top_k=2)
     lr_monitor = pl.callbacks.LearningRateMonitor(logging_interval="step")
+
     print(f"hyperparameters = {args}")
+
     trainer = pl.Trainer(
         max_steps=args.total_steps,
         val_check_interval=args.eval_step,
@@ -109,3 +117,4 @@ if __name__ == "__main__":
         callbacks=[checkpoint_callback, lr_monitor]
     )
     trainer.fit(model, data_module)
+
